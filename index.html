@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Event Persona Finder — Imprint</title>
 <meta name="description" content="Describe your event and get a blended persona with KPIs, confidence, and a shareable link.">
 <style>
@@ -24,7 +25,7 @@ select,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2
 .btn{border:0;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700}
 .btn.primary{background:linear-gradient(180deg,var(--blue),#1B2AA0);color:#fff}
 .btn.ghost{background:#141821;border:1px solid #283043;color:#c8d0db}
-.hero{width:100%;border-radius:14px;border:1px solid var(--border)}
+.hero{width:100%;border-radius:14px;border:1px solid var(--border);background:#0e121a;aspect-ratio:4/3;object-fit:cover}
 .kbar{height:10px;background:#0e121a;border:1px solid #243045;border-radius:999px;overflow:hidden;margin-top:4px}
 .kbar .fill{height:100%;background:linear-gradient(90deg,#2C3CC9,#FA5C00)}
 .blend{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center}
@@ -39,7 +40,7 @@ select,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2
 <div class="container">
   <div class="card">
     <h1>Find your event’s persona</h1>
-    <p class="lede">Real‑time preview and shareable links. Choose what matters—goals, setting, engagement—and we’ll blend two personas with a confidence score.</p>
+    <p class="lede">Real-time preview and shareable links. Choose what matters—goals, setting, engagement—and we’ll blend two personas with a confidence score.</p>
     <div class="toolbar" style="margin-top:8px">
       <button class="btn ghost" id="copy">Copy share link</button>
       <button class="btn ghost" id="reset">Reset</button>
@@ -119,9 +120,9 @@ select,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2
       <div class="label" style="margin-top:10px">Engagement style (pick up to 2)</div>
       <div class="pgroup" id="eng">
         <span class="pill" data-key="spectacle">Big stage</span>
-        <span class="pill" data-key="minishows">Mini‑shows loop</span>
+        <span class="pill" data-key="minishows">Mini-shows loop</span>
         <span class="pill" data-key="curated">Curated rooms</span>
-        <span class="pill" data-key="hands">Hands‑on labs</span>
+        <span class="pill" data-key="hands">Hands-on labs</span>
         <span class="pill" data-key="chill">Chill hospitality</span>
         <span class="pill" data-key="inclusive">Inclusive + sponsors</span>
       </div>
@@ -145,26 +146,28 @@ select,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2
 </div>
 
 <script>
+// --- Images (swap these URLs later if you want your own) ---
 const IMG = {
-  Showrunner:"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
-  Connector:"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
-  Scientist:"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
-  Host:"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
-  Rainmaker:"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
-  Guardian:"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
-  Amplifier:"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
-};
-const ARCH = {
-  Showrunner: {vibe:"bold • high‑energy • theatrical", best:"flagship conferences, product launches, big‑stage trade shows", kpis:["Peak‑session attendance","Qualified meetings","Clip reach"], unlock:["Programming shape","“Headline” moment","Clip plan","Budget watchouts"], cta:"Make your moment land—and last."},
-  Connector:  {vibe:"warm • curated • relationship‑driven", best:"exec breakfasts, micro‑summits, VIP dinners, roadshows", kpis:["Qualified intros","Opps created","Follow‑up meetings"], unlock:["Roundtable prompts","Curated‑intro workflow","Timebox rules"], cta:"Make the room your moat."},
-  Scientist:  {vibe:"smart • practical • proof‑seeking", best:"hands‑on workshops, training tracks, enablement days", kpis:["Completion rate","CSAT","Enablement adoption"], unlock:["Lab agenda","Materials list","Assessment rubric","Recording plan"], cta:"Teach the thing—don’t pitch the thing."},
-  Host:       {vibe:"relaxed • hospitality‑first • premium touches", best:"incentive trips, customer retreats, partner offsites", kpis:["Renewal/expansion","NPS","Repeat attendance"], unlock:["Signature moment ideas","Pace map","F&B guardrails","Memory‑reel plan"], cta:"Design loyalty you can feel."},
-  Rainmaker:  {vibe:"confident • energetic • outcomes‑driven", best:"in‑booth programming + micro‑events around trade shows", kpis:["Meetings booked","SQL rate","Sponsor upgrades"], unlock:["Hourly mini‑show loop","Scanner discipline","Lead routing","Clip cues"], cta:"Make the booth a campaign engine."},
-  Guardian:   {vibe:"inclusive • thoughtful • steady", best:"association tracks, sponsor showcases, community conferences", kpis:["NPS","ADA satisfaction","Sponsor renewals"], unlock:["Sensory‑friendly options","Panel format rules","Sponsor grid cues"], cta:"Experiences that include everyone—and renew sponsors."},
-  Amplifier:  {vibe:"editorial • fast‑turn • distribution‑first", best:"content‑capture studios, interview pods, livestream add‑ons", kpis:["Clips in 48h","Reach/engagement","Cost per asset"], unlock:["Capture map + shot list","Staffing grid","48‑hour clip plan","Release workflow"], cta:"Turn your event into a content engine."},
+  Showrunner:"https://placehold.co/800x600?text=Showrunner",
+  Connector:"https://placehold.co/800x600?text=Connector",
+  Scientist:"https://placehold.co/800x600?text=Scientist",
+  Host:"https://placehold.co/800x600?text=Host",
+  Rainmaker:"https://placehold.co/800x600?text=Rainmaker",
+  Guardian:"https://placehold.co/800x600?text=Guardian",
+  Amplifier:"https://placehold.co/800x600?text=Amplifier",
 };
 
-// Weights
+const ARCH = {
+  Showrunner: {vibe:"bold • high-energy • theatrical", best:"flagship conferences, product launches, big-stage trade shows", kpis:["Peak-session attendance","Qualified meetings","Clip reach"], unlock:["Programming shape","“Headline” moment","Clip plan","Budget watchouts"], cta:"Make your moment land—and last."},
+  Connector:  {vibe:"warm • curated • relationship-driven", best:"exec breakfasts, micro-summits, VIP dinners, roadshows", kpis:["Qualified intros","Opps created","Follow-up meetings"], unlock:["Roundtable prompts","Curated-intro workflow","Timebox rules"], cta:"Make the room your moat."},
+  Scientist:  {vibe:"smart • practical • proof-seeking", best:"hands-on workshops, training tracks, enablement days", kpis:["Completion rate","CSAT","Enablement adoption"], unlock:["Lab agenda","Materials list","Assessment rubric","Recording plan"], cta:"Teach the thing—don’t pitch the thing."},
+  Host:       {vibe:"relaxed • hospitality-first • premium touches", best:"incentive trips, customer retreats, partner offsites", kpis:["Renewal/expansion","NPS","Repeat attendance"], unlock:["Signature moment ideas","Pace map","F&B guardrails","Memory-reel plan"], cta:"Design loyalty you can feel."},
+  Rainmaker:  {vibe:"confident • energetic • outcomes-driven", best:"in-booth programming + micro-events around trade shows", kpis:["Meetings booked","SQL rate","Sponsor upgrades"], unlock:["Hourly mini-show loop","Scanner discipline","Lead routing","Clip cues"], cta:"Make the booth a campaign engine."},
+  Guardian:   {vibe:"inclusive • thoughtful • steady", best:"association tracks, sponsor showcases, community conferences", kpis:["NPS","ADA satisfaction","Sponsor renewals"], unlock:["Sensory-friendly options","Panel format rules","Sponsor grid cues"], cta:"Experiences that include everyone—and renew sponsors."},
+  Amplifier:  {vibe:"editorial • fast-turn • distribution-first", best:"content-capture studios, interview pods, livestream add-ons", kpis:["Clips in 48h","Reach/engagement","Cost per asset"], unlock:["Capture map + shot list","Staffing grid","48-hour clip plan","Release workflow"], cta:"Turn your event into a content engine."},
+};
+
+// --- Weights (nuanced) ---
 const W = {
   goals: {
     brand: {Showrunner:3, Amplifier:1, Host:1},
@@ -196,7 +199,7 @@ function score(state){
   addScore(s, W.speed[state.speed]);
   addScore(s, W.access[state.access]);
   addScore(s, W.budget[state.budget]);
-  addScore(s, W.sales[state.sales]);
+  addScore(s, W.sales[state.sales]));
   state.eng.forEach(e=> addScore(s, W.eng[e]));
   addScore(s, W.attendance(state.att));
   return s;
@@ -204,11 +207,11 @@ function score(state){
 function topTwo(scores){
   const arr = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
   const [a,b] = arr;
-  const total = Math.max(1, a[1] + b[1]);
+  const total = Math.max(1, a[1] + (b ? b[1] : 0));
   const pa = Math.round((a[1]/total)*100);
   const pb = 100 - pa;
-  const conf = Math.max(0, Math.min(100, Math.round( (a[1]-b[1]) / (a[1]||1) * 100 )));
-  return {a:a[0], b:b[0], pa, pb, conf};
+  const conf = Math.max(0, Math.min(100, Math.round( (a[1]- (b?b[1]:0)) / (a[1]||1) * 100 )));
+  return {a:a[0], b:b?b[0]:a[0], pa, pb, conf};
 }
 function rationale(state){
   const bits = [];
@@ -224,32 +227,32 @@ function renderBlend(res, state){
   const container = document.getElementById('result');
   const intro = document.getElementById('resultIntro');
   intro.style.display = 'none';
-  const rlist = rationale(state).map(x=>`<li>\${x}</li>`).join("");
+  const rlist = rationale(state).map(x=>`<li>${x}</li>`).join("");
   container.innerHTML = `
   <div class="card fade-in">
     <div class="blend">
       <div>
-        <h2>\${res.a} <span class="small">(\${res.pa}%)</span></h2>
-        <div class="kbar"><div class="fill" style="width:\${res.pa}%"></div></div>
-        <p class="small" style="margin-top:6px">\${ARCH[res.a].vibe}</p>
+        <h2>${res.a} <span class="small">(${res.pa}%)</span></h2>
+        <div class="kbar"><div class="fill" style="width:${res.pa}%"></div></div>
+        <p class="small" style="margin-top:6px">${ARCH[res.a].vibe}</p>
       </div>
       <div>
-        <h2>\${res.b} <span class="small">(\${res.pb}%)</span></h2>
-        <div class="kbar"><div class="fill" style="width:\${res.pb}%;background:linear-gradient(90deg,#FA5C00,#2C3CC9)"></div></div>
-        <p class="small" style="margin-top:6px">\${ARCH[res.b].vibe}</p>
+        <h2>${res.b} <span class="small">(${res.pb}%)</span></h2>
+        <div class="kbar"><div class="fill" style="width:${res.pb}%;background:linear-gradient(90deg,#FA5C00,#2C3CC9)"></div></div>
+        <p class="small" style="margin-top:6px">${ARCH[res.b].vibe}</p>
       </div>
     </div>
-    <p class="small" style="margin-top:8px">Confidence: <strong>\${res.conf}%</strong></p>
+    <p class="small" style="margin-top:8px">Confidence: <strong>${res.conf}%</strong></p>
     <div class="grid two" style="margin-top:10px">
-      <div><img class="hero" id="hero" src="\${IMG[res.a]}" alt="\${res.a}"></div>
+      <div><img class="hero" id="hero" src="${IMG[res.a]}" alt="${res.a}"></div>
       <div>
-        <h3>Best‑fit formats</h3>
-        <p class="small"><strong>\${res.a}:</strong> \${ARCH[res.a].best}</p>
-        <p class="small"><strong>\${res.b}:</strong> \${ARCH[res.b].best}</p>
+        <h3>Best-fit formats</h3>
+        <p class="small"><strong>${res.a}:</strong> ${ARCH[res.a].best}</p>
+        <p class="small"><strong>${res.b}:</strong> ${ARCH[res.b].best}</p>
         <h3 style="margin-top:10px">Success KPIs</h3>
-        <div class="kpis">\${ARCH[res.a].kpis.slice(0,3).map(k=>`<div class='kpi'><h3>KPI</h3><div class='v'>\${k}</div></div>`).join("")}</div>
+        <div class="kpis">${ARCH[res.a].kpis.slice(0,3).map(k=>`<div class='kpi'><h3>KPI</h3><div class='v'>${k}</div></div>`).join("")}</div>
         <h3 style="margin-top:10px">Why this match</h3>
-        <ul class="small">\${rlist}</ul>
+        <ul class="small">${rlist}</ul>
         <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn primary" id="unlock">Unlock plan</button>
           <button class="btn ghost" id="swap">See other image</button>
@@ -264,13 +267,13 @@ function renderBlend(res, state){
   document.getElementById('unlock').onclick = () => gate(res.a);
 }
 
-// Selection wiring
+// --- Selection wiring (CLICKABLE!) ---
 function setupSeg(id){
   const el = document.getElementById(id);
-  el.addEventListener('click', e=>{ 
-    if(e.target.tagName!=='BUTTON') return; 
-    [...el.children].forEach(b=>b.setAttribute('aria-pressed','false')); 
-    e.target.setAttribute('aria-pressed','true'); 
+  el.addEventListener('click', (e)=>{
+    if(e.target.tagName !== 'BUTTON') return;
+    [...el.children].forEach(b=>b.setAttribute('aria-pressed','false'));
+    e.target.setAttribute('aria-pressed','true');
     onChange();
   });
 }
@@ -278,12 +281,13 @@ function setupSeg(id){
 
 function setupPills(id, max=2){
   const el = document.getElementById(id);
-  el.addEventListener('click', e=>{
+  el.addEventListener('click', (e)=>{
     const pill = e.target.closest('.pill'); if(!pill) return;
-    const on = pill.getAttribute('data-active')==='1';
-    if(on) pill.setAttribute('data-active','0'); else {
+    const on = pill.getAttribute('data-active') === '1';
+    if(on){ pill.setAttribute('data-active','0'); }
+    else {
       const active = el.querySelectorAll('[data-active="1"]').length;
-      if(active>=max) return;
+      if(active >= max) return;
       pill.setAttribute('data-active','1');
     }
     onChange();
@@ -292,14 +296,21 @@ function setupPills(id, max=2){
 setupPills("goals",2); setupPills("eng",2);
 
 const att = document.getElementById('att'), attv = document.getElementById('attv');
-att.addEventListener('input', ()=>{attv.textContent = "≈ " + att.value; onChange();});
+att.addEventListener('input', ()=>{ attv.textContent = "≈ " + att.value; onChange(); });
 
-document.getElementById('reset').onclick = ()=>{ history.replaceState(null,"",location.pathname); window.location.reload(); };
-document.getElementById('copy').onclick = ()=>{ navigator.clipboard.writeText(location.href).then(()=>{document.getElementById('hint').textContent="Link copied — share it with your team.";}); };
+document.getElementById('reset').onclick = ()=>{
+  history.replaceState(null,"",location.pathname);
+  window.location.reload();
+};
+document.getElementById('copy').onclick = ()=>{
+  navigator.clipboard.writeText(location.href).then(()=>{
+    document.getElementById('hint').textContent="Link copied — share it with your team.";
+  });
+};
 
-// State helpers
+// --- State helpers + URL sync ---
 function pickVal(id){
-  const b = document.querySelector('#'+id+' button[aria-pressed="true"]'); 
+  const b = document.querySelector('#'+id+' button[aria-pressed="true"]');
   return b ? b.dataset.v : null;
 }
 function readState(){
@@ -326,6 +337,7 @@ function encodeState(s){
 }
 function applyState(params){
   const get = (k, d=null)=> params.get(k) ?? d;
+  // pills
   const setPills = (id, csv)=>{
     document.querySelectorAll('#'+id+' .pill').forEach(x=> x.setAttribute('data-active','0'));
     (csv||'').split(',').filter(Boolean).slice(0,2).forEach(key=>{
@@ -334,6 +346,7 @@ function applyState(params){
   };
   setPills('goals', get('goals',''));
   setPills('eng', get('eng',''));
+  // segs
   const setSeg = (id,val)=>{
     const el = document.getElementById(id);
     if(!el) return;
@@ -346,21 +359,22 @@ function applyState(params){
     if(!done) el.children[0]?.setAttribute('aria-pressed','true');
   };
   ['setting','aud','speed','access','budget','sales'].forEach(k=> setSeg(k, get(k, null)));
+  // range
   const a = parseInt(get('att', '300'), 10);
   if(!isNaN(a)){ document.getElementById('att').value = a; document.getElementById('attv').textContent = "≈ " + a; }
 }
 
-// Gate
+// --- Gate ---
 function gate(key){
   const email = prompt("Work email to unlock the plan:");
   if(!email) return;
   const bad = ["gmail.com","yahoo.com","icloud.com","hotmail.com","outlook.com","aol.com","proton.me","pm.me","live.com","me.com"];
   const ok = email.includes("@") && !bad.includes(email.split("@").pop().toLowerCase());
   if(!ok) return alert("Use a work email (no personal domains).");
-  alert("Unlocked: " + key + " — we'll bring this into a 15‑min blueprint call.");
+  alert("Unlocked: " + key + " — we'll bring this into a 15-min blueprint call.");
 }
 
-// Live update
+// --- Live update ---
 let firstRun = true;
 function onChange(){
   const state = readState();
@@ -369,7 +383,10 @@ function onChange(){
   const sc = score(state);
   const res = topTwo(sc);
   renderBlend(res, state);
-  if(firstRun) window.scrollTo({top:document.querySelector('#result').getBoundingClientRect().top + window.scrollY - 10, behavior:'smooth'});
+  if(firstRun){
+    const y = document.querySelector('#result').getBoundingClientRect().top + window.scrollY - 10;
+    window.scrollTo({top:y,behavior:'smooth'});
+  }
   firstRun = false;
 }
 
