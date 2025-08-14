@@ -1,16 +1,21 @@
 <script>
-// --- Persona images ---
+console.log("persona-quiz build v9");
+
+// -------- CONFIG: update this when you replace images --------
+const IMG_VERSION = "v2"; // bump to v3 next time you upload new images
+
+// -------- Persona images (served from /assets/images) --------
 const IMG = {
-  Showrunner: "./showrunner.webp",
-  Connector:  "./connector.webp",
-  Scientist:  "./scientist.webp",
-  Host:       "./host.webp",
-  Rainmaker:  "./rainmaker.webp",
-  Guardian:   "./guardian.webp",
-  Amplifier:  "./amplifier.webp",
+  Showrunner: `./assets/images/showrunner.webp?${IMG_VERSION}`,
+  Connector:  `./assets/images/connector.webp?${IMG_VERSION}`,
+  Scientist:  `./assets/images/scientist.webp?${IMG_VERSION}`,
+  Host:       `./assets/images/host.webp?${IMG_VERSION}`,
+  Rainmaker:  `./assets/images/rainmaker.webp?${IMG_VERSION}`,
+  Guardian:   `./assets/images/guardian.webp?${IMG_VERSION}`,
+  Amplifier:  `./assets/images/amplifier.webp?${IMG_VERSION}`,
 };
 
-// --- Persona data ---
+// -------- Persona copy --------
 const ARCH = {
   Showrunner: {vibe:"bold • high-energy • theatrical", best:"flagship conferences, product launches, big-stage trade shows", kpis:["Peak-session attendance","Qualified meetings","Clip reach"], unlock:["Programming shape","“Headline” moment","Clip plan","Budget watchouts"], cta:"Make your moment land—and last."},
   Connector:  {vibe:"warm • curated • relationship-driven", best:"exec breakfasts, micro-summits, VIP dinners, roadshows", kpis:["Qualified intros","Opps created","Follow-up meetings"], unlock:["Roundtable prompts","Curated-intro workflow","Timebox rules"], cta:"Make the room your moat."},
@@ -21,7 +26,7 @@ const ARCH = {
   Amplifier:  {vibe:"editorial • fast-turn • distribution-first", best:"content-capture studios, interview pods, livestream add-ons", kpis:["Clips in 48h","Reach/engagement","Cost per asset"], unlock:["Capture map + shot list","Staffing grid","48-hour clip plan","Release workflow"], cta:"Turn your event into a content engine."},
 };
 
-// --- Weights (Amplifier tilt) ---
+// -------- Weights (small tilt toward Amplifier for event marketing) --------
 const W = {
   goals: {
     brand: {Showrunner:3, Amplifier:1, Host:1},
@@ -33,7 +38,7 @@ const W = {
   },
   setting: {flagship:{Showrunner:2}, booth:{Rainmaker:2}, roadshow:{Connector:2}, workshop:{Scientist:2}, community:{Guardian:2}, retreat:{Host:2}},
   aud: {exec:{Connector:1, Host:1}, practitioner:{Scientist:1, Amplifier:1}, mixed:{}},
-  speed: {'48h':{Amplifier:3}, week:{Amplifier:2}, later:{}}, // more points for fast clips
+  speed: {'48h':{Amplifier:3}, week:{Amplifier:2}, later:{}}, // faster clips → more Amplifier
   access: {high:{Guardian:2} , normal:{}},
   budget: {bigmoment:{Showrunner:2, Host:1}, efficient:{Scientist:1, Rainmaker:1}},
   sales: {heavy:{Rainmaker:2, Showrunner:1}, balanced:{}, light:{Host:1, Guardian:1}},
@@ -44,21 +49,77 @@ const W = {
   attendance(n){ if(n>=1000) return {Showrunner:2}; if(n>=100) return {Connector:1}; return {Host:1, Scientist:1}; }
 };
 
-// --- Tie-breaker + marketing tilt ---
+// -------- Deterministic tie-breaker + marketing tilt --------
 const EPS = { Amplifier:0.06, Showrunner:0.05, Connector:0.04, Rainmaker:0.03, Scientist:0.02, Host:0.01, Guardian:0.005 };
 
 function applyMarketingTilt(state, s){
-  let amp = 0.5;
+  let amp = 0.5; // baseline nudge for Imprint's event-marketing posture
   if (state.goals.includes('content')) amp += 1.2;
   if (state.speed === '48h') amp += 1.0;
   else if (state.speed === 'week') amp += 0.5;
-  if (state.setting === 'retreat') amp -= 0.5;
+  if (state.setting === 'retreat') amp -= 0.5; // less central there
   s.Amplifier += Math.max(0, amp);
   return s;
 }
 
-// --- Scoring helpers ---
+// -------- Helpers --------
 function addScore(s, m){ Object.entries(m||{}).forEach(([k,v])=> s[k]+=v); }
+function pickVal(id){
+  const b = document.querySelector('#'+id+' button[aria-pressed="true"]');
+  return b ? b.dataset.v : null;
+}
+function readState(){
+  const goals = [...document.querySelectorAll('#goals .pill[data-active="1"]')].map(x=>x.dataset.key);
+  const eng = [...document.querySelectorAll('#eng .pill[data-active="1"]')].map(x=>x.dataset.key);
+  return {
+    goals, eng,
+    setting: pickVal('setting'),
+    aud: pickVal('aud'),
+    speed: pickVal('speed'),
+    access: pickVal('access'),
+    budget: pickVal('budget'),
+    sales: pickVal('sales'),
+    att: +document.getElementById('att').value,
+  };
+}
+function encodeState(s){
+  const p = new URLSearchParams();
+  if(s.goals.length) p.set('goals', s.goals.join(','));
+  if(s.eng.length) p.set('eng', s.eng.join(','));
+  ['setting','aud','speed','access','budget','sales'].forEach(k=> p.set(k, s[k]));
+  p.set('att', s.att);
+  return p.toString();
+}
+function applyState(params){
+  const get = (k, d=null)=> params.get(k) ?? d;
+  // pills
+  const setPills = (id, csv)=>{
+    document.querySelectorAll('#'+id+' .pill').forEach(x=> x.setAttribute('data-active','0'));
+    (csv||'').split(',').filter(Boolean).slice(0,2).forEach(key=>{
+      const el = document.querySelector('#'+id+' .pill[data-key="'+key+'"]'); if(el) el.setAttribute('data-active','1');
+    });
+  };
+  setPills('goals', get('goals',''));
+  setPills('eng', get('eng',''));
+  // segs
+  const setSeg = (id,val)=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    let done = false;
+    [...el.children].forEach(b=>{
+      const on = b.dataset.v === val;
+      b.setAttribute('aria-pressed', on ? 'true':'false');
+      if(on) done=true;
+    });
+    if(!done) el.children[0]?.setAttribute('aria-pressed','true');
+  };
+  ['setting','aud','speed','access','budget','sales'].forEach(k=> setSeg(k, get(k, null)));
+  // range
+  const a = parseInt(get('att', '300'), 10);
+  if(!isNaN(a)){ document.getElementById('att').value = a; document.getElementById('attv').textContent = "≈ " + a; }
+}
+
+// -------- Scoring + Confidence --------
 function score(state){
   const s={Showrunner:0,Connector:0,Scientist:0,Host:0,Rainmaker:0,Guardian:0,Amplifier:0};
   state.goals.forEach(g=> addScore(s, W.goals[g]));
@@ -71,6 +132,7 @@ function score(state){
   state.eng.forEach(e=> addScore(s, W.eng[e]));
   addScore(s, W.attendance(state.att));
 
+  // tie-breaker + tilt
   Object.keys(s).forEach(k=> s[k] += (EPS[k] || 0));
   applyMarketingTilt(state, s);
 
@@ -102,15 +164,18 @@ function rationale(state){
   return bits;
 }
 
-// --- Render ---
+// -------- Render (winner image, KPIs from BOTH personas) --------
 function renderBlend(res, state){
   const container = document.getElementById('result');
   const intro = document.getElementById('resultIntro');
-  intro.style.display = 'none';
+  if (intro) intro.style.display = 'none';
 
   const c = confidenceLabel(res.conf);
   const heroSrc = IMG[res.a] || "";
   const rlist = rationale(state).map(x=>`<li>${x}</li>`).join("");
+
+  const kpisA = ARCH[res.a].kpis.slice(0,3).map(k=>`<div class='kpi'><h3>${res.a} KPI</h3><div class='v'>${k}</div></div>`).join("");
+  const kpisB = ARCH[res.b].kpis.slice(0,3).map(k=>`<div class='kpi'><h3>${res.b} KPI</h3><div class='v'>${k}</div></div>`).join("");
 
   container.innerHTML = `
   <div class="card fade-in">
@@ -142,8 +207,8 @@ function renderBlend(res, state){
         <p class="small"><strong>${res.a}:</strong> ${ARCH[res.a].best}</p>
         <p class="small"><strong>${res.b}:</strong> ${ARCH[res.b].best}</p>
 
-        <h3 style="margin-top:10px">Success KPIs</h3>
-        <div class="kpis">${ARCH[res.a].kpis.slice(0,3).map(k=>`<div class='kpi'><h3>KPI</h3><div class='v'>${k}</div></div>`).join("")}</div>
+        <h3 style="margin-top:10px">Success KPIs (both personas)</h3>
+        <div class="kpis">${kpisA}${kpisB}</div>
 
         <h3 style="margin-top:10px">Why this match</h3>
         <ul class="small">${rlist}</ul>
@@ -166,7 +231,7 @@ function renderBlend(res, state){
   document.getElementById('unlock').onclick = () => gate(res.a);
 }
 
-// --- UI setup ---
+// -------- UI wiring --------
 function setupSeg(id){
   const el = document.getElementById(id);
   el.addEventListener('click', (e)=>{
@@ -194,12 +259,10 @@ function setupPills(id, max=2){
 }
 setupPills("goals",2); setupPills("eng",2);
 
-const att = document.getElementById('att'), attv = document.getElementById('attv');
-att.addEventListener('input', ()=>{ attv.textContent = "≈ " + att.value; onChange(); });
-
+// -------- Reset / Copy (stable on GH Pages) --------
 document.getElementById('reset').onclick = ()=>{
-  history.replaceState(null,"",location.pathname);
-  window.location.reload();
+  const clean = location.origin + location.pathname; // strips ?query safely
+  location.replace(clean);
 };
 document.getElementById('copy').onclick = ()=>{
   navigator.clipboard.writeText(location.href).then(()=>{
@@ -207,60 +270,7 @@ document.getElementById('copy').onclick = ()=>{
   });
 };
 
-// --- State & URL sync ---
-function pickVal(id){
-  const b = document.querySelector('#'+id+' button[aria-pressed="true"]');
-  return b ? b.dataset.v : null;
-}
-function readState(){
-  const goals = [...document.querySelectorAll('#goals .pill[data-active="1"]')].map(x=>x.dataset.key);
-  const eng = [...document.querySelectorAll('#eng .pill[data-active="1"]')].map(x=>x.dataset.key);
-  return {
-    goals, eng,
-    setting: pickVal('setting'),
-    aud: pickVal('aud'),
-    speed: pickVal('speed'),
-    access: pickVal('access'),
-    budget: pickVal('budget'),
-    sales: pickVal('sales'),
-    att: +document.getElementById('att').value,
-  };
-}
-function encodeState(s){
-  const p = new URLSearchParams();
-  if(s.goals.length) p.set('goals', s.goals.join(','));
-  if(s.eng.length) p.set('eng', s.eng.join(','));
-  ['setting','aud','speed','access','budget','sales'].forEach(k=> p.set(k, s[k]));
-  p.set('att', s.att);
-  return p.toString();
-}
-function applyState(params){
-  const get = (k, d=null)=> params.get(k) ?? d;
-  const setPills = (id, csv)=>{
-    document.querySelectorAll('#'+id+' .pill').forEach(x=> x.setAttribute('data-active','0'));
-    (csv||'').split(',').filter(Boolean).slice(0,2).forEach(key=>{
-      const el = document.querySelector('#'+id+' .pill[data-key="'+key+'"]'); if(el) el.setAttribute('data-active','1');
-    });
-  };
-  setPills('goals', get('goals',''));
-  setPills('eng', get('eng',''));
-  const setSeg = (id,val)=>{
-    const el = document.getElementById(id);
-    if(!el) return;
-    let done = false;
-    [...el.children].forEach(b=>{
-      const on = b.dataset.v === val;
-      b.setAttribute('aria-pressed', on ? 'true':'false');
-      if(on) done=true;
-    });
-    if(!done) el.children[0]?.setAttribute('aria-pressed','true');
-  };
-  ['setting','aud','speed','access','budget','sales'].forEach(k=> setSeg(k, get(k, null)));
-  const a = parseInt(get('att', '300'), 10);
-  if(!isNaN(a)){ document.getElementById('att').value = a; document.getElementById('attv').textContent = "≈ " + a; }
-}
-
-// --- Gate ---
+// -------- Gate --------
 function gate(key){
   const email = prompt("Work email to unlock the plan:");
   if(!email) return;
@@ -270,24 +280,30 @@ function gate(key){
   alert("Unlocked: " + key + " — we'll bring this into a 15-min blueprint call.");
 }
 
-// --- Live update ---
+// -------- Live update --------
 let firstRun = true;
 function onChange(){
-  const state = readState();
-  const qs = encodeState(state);
-  history.replaceState(null, "", location.pathname + "?" + qs);
-  const sc = score(state);
-  const res = topTwo(sc);
-  renderBlend(res, state);
-  if(firstRun){
-    const y = document.querySelector('#result').getBoundingClientRect().top + window.scrollY - 10;
-    window.scrollTo({top:y,behavior:'smooth'});
+  try{
+    const state = readState();
+    const qs = encodeState(state);
+    history.replaceState(null, "", location.pathname + "?" + qs);
+    const sc = score(state);
+    const res = topTwo(sc);
+    renderBlend(res, state);
+    if(firstRun){
+      const y = document.querySelector('#result').getBoundingClientRect().top + window.scrollY - 10;
+      window.scrollTo({top:y,behavior:'smooth'});
+    }
+    firstRun = false;
+  }catch(err){
+    console.error("render error:", err);
   }
-  firstRun = false;
 }
 
-// Init
-const params = new URLSearchParams(location.search);
-applyState(params);
-onChange();
+// -------- Init --------
+document.addEventListener('DOMContentLoaded', ()=>{
+  const params = new URLSearchParams(location.search);
+  applyState(params);
+  onChange();
+});
 </script>
