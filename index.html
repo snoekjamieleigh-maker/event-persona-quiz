@@ -1,162 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Event Persona Finder — Imprint</title>
-<meta name="description" content="Describe your event and get a blended persona with KPIs, confidence, and a shareable link.">
-<style>
-:root{--bg:#0f1115;--panel:#171a21;--ink:#e8ecf1;--muted:#aab2be;--border:#222533;--blue:#2C3CC9;--orange:#FA5C00;--pill:#121728}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,Segoe UI,Inter,Arial}
-.container{max-width:1100px;margin:28px auto;padding:0 16px}
-.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:18px}
-h1{font-size:34px;margin:0 0 8px}.lede{color:var(--muted)}
-.grid{display:grid;gap:14px}.two{grid-template-columns:1.1fr .9fr}@media(max-width:959px){.two{grid-template-columns:1fr}}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.label{display:block;margin:8px 0 6px;color:#9aa3af;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
-.pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--pill);border:1px solid #242b3a;color:#c4cad6;font-size:14px;cursor:pointer;user-select:none;transition:.15s}
-.pill[data-active="1"]{background:#182036;border-color:#2c3852;color:#fff;box-shadow:0 0 0 2px #1a2233 inset}
-.pgroup{display:flex;flex-wrap:wrap;gap:8px}
-.seg{display:flex;border:1px solid #263044;border-radius:12px;overflow:hidden}
-.seg button{flex:1;padding:10px;border:0;background:#0e121a;color:#c4cad6;cursor:pointer}
-.seg button[aria-pressed="true"]{background:#192037;color:#fff}
-.range{display:flex;align-items:center;gap:10px}.range input[type=range]{flex:1}
-select,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2a2f3a;background:#0c0f15;color:var(--ink)}
-.btn{border:0;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700}
-.btn.primary{background:linear-gradient(180deg,var(--blue),#1B2AA0);color:#fff}
-.btn.ghost{background:#141821;border:1px solid #283043;color:#c8d0db}
-.hero{width:100%;border-radius:14px;border:1px solid var(--border);background:#0e121a;aspect-ratio:4/3;object-fit:cover}
-.kbar{height:10px;background:#0e121a;border:1px solid #243045;border-radius:999px;overflow:hidden;margin-top:4px}
-.kbar .fill{height:100%;background:linear-gradient(90deg,#2C3CC9,#FA5C00)}
-.blend{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}.kpi{background:#11141a;border:1px solid var(--border);border-radius:14px;padding:12px}
-.kpi h3{margin:0;color:#aab2be;font-size:12px;letter-spacing:.06em}.kpi .v{font-weight:800;font-size:20px;margin-top:4px}
-.small{font-size:12px;color:#aab2be}.muted{color:#aab2be}
-.fade-in{animation:fade .25s ease-out both}@keyframes fade{from{opacity:.001;transform:translateY(6px)}to{opacity:1;transform:none}}
-.toolbar{display:flex;gap:10px;flex-wrap:wrap}
-</style>
-</head>
-<body>
-<div class="container">
-  <div class="card">
-    <h1>Find your event’s persona</h1>
-    <p class="lede">Real-time preview and shareable links. Choose what matters—goals, setting, engagement—and we’ll blend two personas with a confidence score.</p>
-    <div class="toolbar" style="margin-top:8px">
-      <button class="btn ghost" id="copy">Copy share link</button>
-      <button class="btn ghost" id="reset">Reset</button>
-    </div>
-    <p class="small muted" id="hint" style="margin-top:6px">Tweak anything below—the result updates instantly.</p>
-  </div>
-
-  <div class="grid two" style="margin-top:14px">
-    <div class="card">
-      <div class="label">Primary goals (pick up to 2)</div>
-      <div class="pgroup" id="goals">
-        <span class="pill" data-key="brand">Brand moment</span>
-        <span class="pill" data-key="meetings">Qualified meetings</span>
-        <span class="pill" data-key="relationships">Exec relationships</span>
-        <span class="pill" data-key="enablement">Enablement</span>
-        <span class="pill" data-key="sponsor">Sponsor value</span>
-        <span class="pill" data-key="content">Content for 90 days</span>
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <div>
-          <div class="label">Setting</div>
-          <div class="seg" id="setting">
-            <button data-v="flagship" aria-pressed="true">Flagship</button>
-            <button data-v="booth">Booth</button>
-            <button data-v="roadshow">Roadshow</button>
-            <button data-v="workshop">Workshop</button>
-            <button data-v="community">Association</button>
-            <button data-v="retreat">Retreat</button>
-          </div>
-        </div>
-        <div>
-          <div class="label">Audience</div>
-          <div class="seg" id="aud">
-            <button data-v="mixed" aria-pressed="true">Mixed</button>
-            <button data-v="exec">Exec heavy</button>
-            <button data-v="practitioner">Practitioner</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <div>
-          <div class="label">Speed to clips</div>
-          <div class="seg" id="speed">
-            <button data-v="48h" aria-pressed="true">48h</button>
-            <button data-v="week">Within a week</button>
-            <button data-v="later">Later</button>
-          </div>
-        </div>
-        <div>
-          <div class="label">Accessibility / sponsors</div>
-          <div class="seg" id="access">
-            <button data-v="normal" aria-pressed="true">Important</button>
-            <button data-v="high">Critical</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <div>
-          <div class="label">Budget posture</div>
-          <div class="seg" id="budget">
-            <button data-v="bigmoment" aria-pressed="true">Big moment</button>
-            <button data-v="efficient">Efficient</button>
-          </div>
-        </div>
-        <div>
-          <div class="label">Attendance (estimate)</div>
-          <div class="range">
-            <input id="att" type="range" min="30" max="2000" step="10" value="300">
-            <span id="attv" class="small">≈ 300</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="label" style="margin-top:10px">Engagement style (pick up to 2)</div>
-      <div class="pgroup" id="eng">
-        <span class="pill" data-key="spectacle">Big stage</span>
-        <span class="pill" data-key="minishows">Mini-shows loop</span>
-        <span class="pill" data-key="curated">Curated rooms</span>
-        <span class="pill" data-key="hands">Hands-on labs</span>
-        <span class="pill" data-key="chill">Chill hospitality</span>
-        <span class="pill" data-key="inclusive">Inclusive + sponsors</span>
-      </div>
-
-      <div class="label" style="margin-top:10px">Sales involvement</div>
-      <div class="seg" id="sales">
-        <button data-v="heavy" aria-pressed="true">Heavy</button>
-        <button data-v="balanced">Balanced</button>
-        <button data-v="light">Light</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>Live result</h3>
-      <div id="resultIntro" class="small muted">Start picking options — we’ll blend your top two personas automatically.</div>
-      <div id="result"></div>
-    </div>
-  </div>
-
-  <div style="margin:24px 0" class="small">© Imprint Events Group — Tools & Insights</div>
-</div>
-
 <script>
-// --- Images (swap these URLs later if you want your own) ---
+// --- Persona images ---
 const IMG = {
-  Showrunner:"https://placehold.co/800x600?text=Showrunner",
-  Connector:"https://placehold.co/800x600?text=Connector",
-  Scientist:"https://placehold.co/800x600?text=Scientist",
-  Host:"https://placehold.co/800x600?text=Host",
-  Rainmaker:"https://placehold.co/800x600?text=Rainmaker",
-  Guardian:"https://placehold.co/800x600?text=Guardian",
-  Amplifier:"https://placehold.co/800x600?text=Amplifier",
+  Showrunner: "./showrunner.webp",
+  Connector:  "./connector.webp",
+  Scientist:  "./scientist.webp",
+  Host:       "./host.webp",
+  Rainmaker:  "./rainmaker.webp",
+  Guardian:   "./guardian.webp",
+  Amplifier:  "./amplifier.webp",
 };
 
+// --- Persona data ---
 const ARCH = {
   Showrunner: {vibe:"bold • high-energy • theatrical", best:"flagship conferences, product launches, big-stage trade shows", kpis:["Peak-session attendance","Qualified meetings","Clip reach"], unlock:["Programming shape","“Headline” moment","Clip plan","Budget watchouts"], cta:"Make your moment land—and last."},
   Connector:  {vibe:"warm • curated • relationship-driven", best:"exec breakfasts, micro-summits, VIP dinners, roadshows", kpis:["Qualified intros","Opps created","Follow-up meetings"], unlock:["Roundtable prompts","Curated-intro workflow","Timebox rules"], cta:"Make the room your moat."},
@@ -167,7 +21,7 @@ const ARCH = {
   Amplifier:  {vibe:"editorial • fast-turn • distribution-first", best:"content-capture studios, interview pods, livestream add-ons", kpis:["Clips in 48h","Reach/engagement","Cost per asset"], unlock:["Capture map + shot list","Staffing grid","48-hour clip plan","Release workflow"], cta:"Turn your event into a content engine."},
 };
 
-// --- Weights (nuanced) ---
+// --- Weights (Amplifier tilt) ---
 const W = {
   goals: {
     brand: {Showrunner:3, Amplifier:1, Host:1},
@@ -175,11 +29,11 @@ const W = {
     relationships: {Connector:3, Host:1},
     enablement: {Scientist:3, Amplifier:1},
     sponsor: {Guardian:3, Rainmaker:1},
-    content: {Amplifier:3, Showrunner:1, Scientist:1},
+    content: {Amplifier:4, Showrunner:1, Scientist:1}, // +1 tilt
   },
   setting: {flagship:{Showrunner:2}, booth:{Rainmaker:2}, roadshow:{Connector:2}, workshop:{Scientist:2}, community:{Guardian:2}, retreat:{Host:2}},
   aud: {exec:{Connector:1, Host:1}, practitioner:{Scientist:1, Amplifier:1}, mixed:{}},
-  speed: {'48h':{Amplifier:2}, week:{Amplifier:1}, later:{}},
+  speed: {'48h':{Amplifier:3}, week:{Amplifier:2}, later:{}}, // more points for fast clips
   access: {high:{Guardian:2} , normal:{}},
   budget: {bigmoment:{Showrunner:2, Host:1}, efficient:{Scientist:1, Rainmaker:1}},
   sales: {heavy:{Rainmaker:2, Showrunner:1}, balanced:{}, light:{Host:1, Guardian:1}},
@@ -190,6 +44,20 @@ const W = {
   attendance(n){ if(n>=1000) return {Showrunner:2}; if(n>=100) return {Connector:1}; return {Host:1, Scientist:1}; }
 };
 
+// --- Tie-breaker + marketing tilt ---
+const EPS = { Amplifier:0.06, Showrunner:0.05, Connector:0.04, Rainmaker:0.03, Scientist:0.02, Host:0.01, Guardian:0.005 };
+
+function applyMarketingTilt(state, s){
+  let amp = 0.5;
+  if (state.goals.includes('content')) amp += 1.2;
+  if (state.speed === '48h') amp += 1.0;
+  else if (state.speed === 'week') amp += 0.5;
+  if (state.setting === 'retreat') amp -= 0.5;
+  s.Amplifier += Math.max(0, amp);
+  return s;
+}
+
+// --- Scoring helpers ---
 function addScore(s, m){ Object.entries(m||{}).forEach(([k,v])=> s[k]+=v); }
 function score(state){
   const s={Showrunner:0,Connector:0,Scientist:0,Host:0,Rainmaker:0,Guardian:0,Amplifier:0};
@@ -199,9 +67,13 @@ function score(state){
   addScore(s, W.speed[state.speed]);
   addScore(s, W.access[state.access]);
   addScore(s, W.budget[state.budget]);
-  addScore(s, W.sales[state.sales]); /* <-- fixed line */
+  addScore(s, W.sales[state.sales]);
   state.eng.forEach(e=> addScore(s, W.eng[e]));
   addScore(s, W.attendance(state.att));
+
+  Object.keys(s).forEach(k=> s[k] += (EPS[k] || 0));
+  applyMarketingTilt(state, s);
+
   return s;
 }
 function topTwo(scores){
@@ -213,6 +85,12 @@ function topTwo(scores){
   const conf = Math.max(0, Math.min(100, Math.round( (a[1]- (b?b[1]:0)) / (a[1]||1) * 100 )));
   return {a:a[0], b:b?b[0]:a[0], pa, pb, conf};
 }
+function confidenceLabel(conf){
+  if (conf >= 70) return {label:"Very strong match", expl:"Your choices align clearly with one persona."};
+  if (conf >= 50) return {label:"Strong match", expl:"Most signals point to one persona."};
+  if (conf >= 30) return {label:"Balanced", expl:"You share traits with two personas."};
+  return {label:"Close call", expl:"Two personas are nearly tied."};
+}
 function rationale(state){
   const bits = [];
   if(state.goals.length) bits.push("Goals → " + state.goals.join(" + "));
@@ -223,11 +101,17 @@ function rationale(state){
   if(state.access==="high") bits.push("Accessibility → critical");
   return bits;
 }
+
+// --- Render ---
 function renderBlend(res, state){
   const container = document.getElementById('result');
   const intro = document.getElementById('resultIntro');
   intro.style.display = 'none';
+
+  const c = confidenceLabel(res.conf);
+  const heroSrc = IMG[res.a] || "";
   const rlist = rationale(state).map(x=>`<li>${x}</li>`).join("");
+
   container.innerHTML = `
   <div class="card fade-in">
     <div class="blend">
@@ -242,32 +126,47 @@ function renderBlend(res, state){
         <p class="small" style="margin-top:6px">${ARCH[res.b].vibe}</p>
       </div>
     </div>
-    <p class="small" style="margin-top:8px">Confidence: <strong>${res.conf}%</strong></p>
+
+    <p class="small" style="margin-top:8px">
+      Confidence: <strong>${res.conf}%</strong>
+      <span class="small" style="opacity:.85">— ${c.label}. ${c.expl}</span>
+    </p>
+
     <div class="grid two" style="margin-top:10px">
-      <div><img class="hero" id="hero" src="${IMG[res.a]}" alt="${res.a}"></div>
+      <div>
+        <img class="hero" id="hero" src="${heroSrc}" alt="${res.a} image">
+        <p class="small muted" style="margin-top:6px">Top match image: ${res.a}</p>
+      </div>
       <div>
         <h3>Best-fit formats</h3>
         <p class="small"><strong>${res.a}:</strong> ${ARCH[res.a].best}</p>
         <p class="small"><strong>${res.b}:</strong> ${ARCH[res.b].best}</p>
+
         <h3 style="margin-top:10px">Success KPIs</h3>
         <div class="kpis">${ARCH[res.a].kpis.slice(0,3).map(k=>`<div class='kpi'><h3>KPI</h3><div class='v'>${k}</div></div>`).join("")}</div>
+
         <h3 style="margin-top:10px">Why this match</h3>
         <ul class="small">${rlist}</ul>
+
         <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn primary" id="unlock">Unlock plan</button>
-          <button class="btn ghost" id="swap">See other image</button>
+          <button class="btn ghost" id="swap">Show ${res.b} image</button>
         </div>
       </div>
     </div>
   </div>`;
+
   document.getElementById('swap').onclick = () => {
     const hero = document.getElementById('hero');
-    hero.src = hero.src.includes(IMG[res.a]) ? IMG[res.b] : IMG[res.a];
+    const a = IMG[res.a], b = IMG[res.b];
+    hero.src = (hero.src.includes(a) ? b : a) || hero.src;
+    document.getElementById('swap').textContent =
+      hero.src.includes(a) ? `Show ${res.b} image` : `Show ${res.a} image`;
   };
   document.getElementById('unlock').onclick = () => gate(res.a);
 }
 
-// --- Selection wiring (CLICKABLE!) ---
+// --- UI setup ---
 function setupSeg(id){
   const el = document.getElementById(id);
   el.addEventListener('click', (e)=>{
@@ -308,7 +207,7 @@ document.getElementById('copy').onclick = ()=>{
   });
 };
 
-// --- State helpers + URL sync ---
+// --- State & URL sync ---
 function pickVal(id){
   const b = document.querySelector('#'+id+' button[aria-pressed="true"]');
   return b ? b.dataset.v : null;
@@ -337,7 +236,6 @@ function encodeState(s){
 }
 function applyState(params){
   const get = (k, d=null)=> params.get(k) ?? d;
-  // pills
   const setPills = (id, csv)=>{
     document.querySelectorAll('#'+id+' .pill').forEach(x=> x.setAttribute('data-active','0'));
     (csv||'').split(',').filter(Boolean).slice(0,2).forEach(key=>{
@@ -346,7 +244,6 @@ function applyState(params){
   };
   setPills('goals', get('goals',''));
   setPills('eng', get('eng',''));
-  // segs
   const setSeg = (id,val)=>{
     const el = document.getElementById(id);
     if(!el) return;
@@ -359,7 +256,6 @@ function applyState(params){
     if(!done) el.children[0]?.setAttribute('aria-pressed','true');
   };
   ['setting','aud','speed','access','budget','sales'].forEach(k=> setSeg(k, get(k, null)));
-  // range
   const a = parseInt(get('att', '300'), 10);
   if(!isNaN(a)){ document.getElementById('att').value = a; document.getElementById('attv').textContent = "≈ " + a; }
 }
@@ -390,10 +286,8 @@ function onChange(){
   firstRun = false;
 }
 
-// Init from URL then render once
+// Init
 const params = new URLSearchParams(location.search);
 applyState(params);
 onChange();
 </script>
-</body>
-</html>
