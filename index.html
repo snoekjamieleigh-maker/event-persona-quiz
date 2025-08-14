@@ -26,20 +26,20 @@ select,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2
 .btn.primary{background:linear-gradient(180deg,var(--blue),#1B2AA0);color:#fff}
 .btn.ghost{background:#141821;border:1px solid #283043;color:#c8d0db}
 
-/* IMAGE — natural aspect ratio (no stretch) */
+/* --- Persona image: natural ratio, smaller footprint --- */
 .hero{
-  width:100%;
-  height:auto;            /* keep original ratio */
+  width:90%;          /* slightly smaller than full width */
+  height:auto;        /* preserve aspect ratio */
+  max-height:360px;   /* don’t let it dominate vertically */
+  object-fit:contain; /* never crop or stretch */
   display:block;
+  margin:0 auto 10px; /* center + a bit of space below */
   border-radius:14px;
   border:1px solid var(--border);
   background:#0e121a;
 }
-.hero-xl{
-  max-height:65vh;        /* big but capped; remove if you want unlimited height */
-}
 
-/* RESULT UI */
+/* Result UI */
 .kbar{height:10px;background:#0e121a;border:1px solid #243045;border-radius:999px;overflow:hidden;margin-top:4px}
 .kbar .fill{height:100%;background:linear-gradient(90deg,#2C3CC9,#FA5C00)}
 .blend{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center}
@@ -160,10 +160,10 @@ select,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2
 </div>
 
 <script>
-console.log("persona-quiz build v14");
+console.log("persona-quiz build v15");
 
 // ---------- CONFIG ----------
-const IMG_VERSION = "v2";
+const IMG_VERSION = "v2"; // bump when you replace images
 
 // ---------- IMAGES ----------
 const IMG = {
@@ -195,7 +195,7 @@ const W = {
     relationships: {Connector:3, Host:1},
     enablement: {Scientist:3, Amplifier:1},
     sponsor: {Guardian:3, Rainmaker:1},
-    content: {Amplifier:4, Showrunner:1, Scientist:1},
+    content: {Amplifier:4, Showrunner:1, Scientist:1}, // tilt
   },
   setting: {flagship:{Showrunner:2}, booth:{Rainmaker:2}, roadshow:{Connector:2}, workshop:{Scientist:2}, community:{Guardian:2}, retreat:{Host:2}},
   aud: {exec:{Connector:1, Host:1}, practitioner:{Scientist:1, Amplifier:1}, mixed:{}},
@@ -317,7 +317,7 @@ function rationale(state){
   return bits;
 }
 
-// ---------- RENDER (BIG IMAGE ON TOP; NATURAL RATIO) ----------
+// ---------- RENDER (big image on top; natural ratio; reliable swap) ----------
 function renderBlend(res, state){
   const container = document.getElementById('result'); if(!container) return;
   const intro = document.getElementById('resultIntro'); if (intro) intro.style.display = 'none';
@@ -329,15 +329,13 @@ function renderBlend(res, state){
 
   container.innerHTML = `
   <div class="card fade-in">
-    <!-- BIG TOP IMAGE (natural ratio) -->
-    <img class="hero hero-xl" id="hero" src="${IMG[res.a]}" alt="${res.a} image" onerror="this.src='https://placehold.co/1200x675?text=${res.a}'" />
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+    <img class="hero" id="hero" src="${IMG[res.a]}" alt="${res.a} image" onerror="this.src='https://placehold.co/1000x600?text=${res.a}'">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
       <button class="btn ghost" id="swap">Show ${res.b} image</button>
       <button class="btn primary" id="unlock">Unlock plan</button>
       <span class="small muted" style="align-self:center">Top match image: ${res.a}</span>
     </div>
 
-    <!-- PERCENTAGES UNDER THE IMAGE -->
     <div class="blend" style="margin-top:12px">
       <div>
         <h2>${res.a} <span class="small">(${res.pa}%)</span></h2>
@@ -356,7 +354,6 @@ function renderBlend(res, state){
       <span class="small" style="opacity:.85">— ${c.label}. ${c.expl}</span>
     </p>
 
-    <!-- DETAILS -->
     <div class="grid two" style="margin-top:10px">
       <div>
         <h3>Best-fit formats</h3>
@@ -373,7 +370,7 @@ function renderBlend(res, state){
     </div>
   </div>`;
 
-  // Reliable swap (track current with dataset instead of checking URLs)
+  // Reliable swap (stateful, no URL string checks)
   const hero = document.getElementById('hero');
   const swap = document.getElementById('swap');
   if (hero && swap){
@@ -381,11 +378,11 @@ function renderBlend(res, state){
     hero.dataset.b = IMG[res.b];
     hero.dataset.current = "a";
     swap.onclick = () => {
-      const isA = hero.dataset.current === "a";
-      hero.src = isA ? hero.dataset.b : hero.dataset.a;
-      hero.dataset.current = isA ? "b" : "a";
-      swap.textContent = isA ? `Show ${res.a} image` : `Show ${res.b} image`;
-      hero.alt = isA ? `${res.b} image` : `${res.a} image`;
+      const showingA = hero.dataset.current === "a";
+      hero.src = showingA ? hero.dataset.b : hero.dataset.a;
+      hero.dataset.current = showingA ? "b" : "a";
+      swap.textContent = showingA ? `Show ${res.a} image` : `Show ${res.b} image`;
+      hero.alt = showingA ? `${res.b} image` : `${res.a} image`;
     };
   }
   const unlock = document.getElementById('unlock');
