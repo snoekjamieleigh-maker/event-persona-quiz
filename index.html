@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>If Your Event Was a Person | Imprint Tools</title>
+<meta name="description" content="Describe your event and see which persona it matches—then unlock a tailored playbook.">
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--ink:#e8ecf1;--muted:#aab2be;--border:#222533;--blue:#2C3CC9;--orange:#FA5C00;--lime:#D1F22F}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,Segoe UI,Inter,Arial}
+.container{max-width:1100px;margin:28px auto;padding:0 16px}.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:18px}
+h1{font-size:34px;margin:0 0 8px}.lede{color:var(--muted)}.grid{display:grid;gap:14px}.grid.two{grid-template-columns:1fr}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(min-width:960px){.grid.two{grid-template-columns:1.1fr .9fr}}
+select,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2a2f3a;background:#0c0f15;color:var(--ink)}
+.btn{border:0;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700}
+.btn.primary{background:linear-gradient(180deg,var(--blue),#1B2AA0);color:#fff}.btn.orange{background:linear-gradient(180deg,var(--orange),#d34e00);color:#141414}
+.pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#0f1320;border:1px solid #252a36;color:var(--muted);font-size:12px;margin-right:6px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}.kpi{background:#11141a;border:1px solid var(--border);border-radius:14px;padding:12px}
+.kpi h3{margin:0;color:var(--muted);font-size:12px;letter-spacing:.06em}.kpi .v{font-weight:800;font-size:20px;margin-top:4px}
+.result{display:grid;gap:14px}.result.two{grid-template-columns:1.1fr .9fr}
+img.hero{width:100%;border-radius:14px;border:1px solid var(--border)}
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);padding:16px}
+.modal .sheet{max-width:720px;width:100%}
+.small{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card"><h1>If your event was a person…</h1>
+    <p class="lede">Answer 9 quick questions. We’ll match your event to a persona—Showrunner, Connector, Scientist, Host, Rainmaker, Guardian, or Amplifier—and suggest the right playbook.</p>
+    <div>
+      <span class="pill">Imprint palette</span><span class="pill">CFO‑friendly</span><span class="pill">Sponsor‑safe</span>
+    </div>
+  </div>
+
+  <div class="grid two" style="margin-top:14px">
+    <div class="card">
+      <h3>Describe your event</h3>
+      <label>Primary outcome</label>
+      <select id="q1"><option value="brand">Big brand moment</option><option value="meetings">Qualified meetings</option><option value="relationships">Exec relationships</option><option value="enablement">Hands‑on enablement</option><option value="sponsor">Sponsor value</option><option value="content">Content for 90 days</option></select>
+      <div class="row"><div><label>Setting</label>
+      <select id="q2"><option value="flagship">Owned flagship</option><option value="booth">Trade show booth</option><option value="roadshow">Roadshow / dinners</option><option value="workshop">Workshop day</option><option value="community">Association / community</option><option value="retreat">Retreat / incentive</option></select></div>
+      <div><label>Audience seniority</label><select id="q3"><option value="mixed">Mixed</option><option value="exec">Exec‑heavy</option><option value="practitioner">Practitioner‑heavy</option></select></div></div>
+      <div class="row"><div><label>Speed to content</label><select id="q4"><option value="48h">Clips live in 48h</option><option value="week">Within a week</option><option value="later">Not a priority</option></select></div>
+      <div><label>Accessibility / sponsors</label><select id="q5"><option value="normal">Important</option><option value="high">Critical</option></select></div></div>
+      <div class="row"><div><label>Budget posture</label><select id="q6"><option value="bigmoment">Go big on a moment</option><option value="efficient">Efficient and focused</option></select></div>
+      <div><label>Attendance size</label><select id="q7"><option value="1000+">1,000+</option><option value="100-400">100–400</option><option value="<=60">≤60</option></select></div></div>
+      <label>Engagement style</label><select id="q8"><option value="spectacle">Spectacle / big stage</option><option value="minishows">Mini‑shows on a loop</option><option value="curated">Curated small rooms</option><option value="hands">Hands‑on labs</option><option value="chill">Chill hospitality</option><option value="inclusive">Inclusive, sponsor‑friendly</option></select>
+      <label>Sales involvement</label><select id="q9"><option value="heavy">Heavy</option><option value="balanced">Balanced</option><option value="light">Light</option></select>
+      <div style="margin-top:12px"><button class="btn primary" id="seePersona">See my persona</button></div>
+    </div>
+    <div class="card"><h3>What you’ll get</h3>
+      <ul><li>Persona match + vibe</li><li>Best‑fit formats</li><li>Success KPIs</li><li>Unlockable playbook</li></ul>
+      <p class="small">Work‑email gate protects the good stuff. No spam.</p>
+    </div>
+  </div>
+
+  <div id="result" style="margin-top:14px"></div>
+  <div style="margin:24px 0" class="small">© Imprint Events Group — Tools & Insights</div>
+</div>
+
+<div class="modal" id="gate">
+  <div class="sheet card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 id="gateTitle">Unlock your plan</h3>
+      <button class="btn" onclick="document.getElementById('gate').style.display='none'">Close</button>
+    </div>
+    <label>Work email</label><input id="gateEmail" placeholder="name@company.com"/>
+    <div id="gateWarn" class="small" style="color:#ff7b7b"></div>
+    <div id="revealBody" style="display:none;margin-top:10px"></div>
+    <div style="margin-top:10px"><button class="btn primary" id="reveal">Reveal</button></div>
+  </div>
+</div>
+
+<script>
+const CONSUMER = ["gmail.com","yahoo.com","outlook.com","hotmail.com","icloud.com","aol.com","proton.me","pm.me","live.com","me.com"];
+const isWorkEmail = (e) => e.includes("@") && !CONSUMER.includes(e.split("@").pop().toLowerCase());
+const ARCH = {
+  Showrunner:{{img:"assets/images/showrunner.webp", vibe:"bold • high‑energy • theatrical", best:"flagship conferences, product launches, big‑stage trade shows", blurb:"You win hearts with showcraft. Big moment, tight cues, content that travels.", tags:["Production‑first","Keynote energy","Big moments"], unlock:["Programming shape","“Headline” moment","Clip plan","Budget watchouts"], cta:"Make your moment land—and last.", kpis:["Peak‑session attendance","Qualified meetings","Clip reach"]}},
+  Connector:{{img:"assets/images/connector.webp", vibe:"warm • curated • relationship‑driven", best:"exec breakfasts, micro‑summits, VIP dinners, roadshows", blurb:"You create rooms where the right people meet fast and feel seen.", tags:["Curated intros","Small‑room magic","Peer energy"], unlock:["Roundtable prompts","Curated‑intro workflow","Timebox rules"], cta:"Make the room your moat.", kpis:["Qualified intros","Opps created","Follow‑up meetings"]}},
+  Scientist:{{img:"assets/images/scientist.webp", vibe:"smart • practical • proof‑seeking", best:"hands‑on workshops, training tracks, enablement days", blurb:"You earn trust with clear steps and proof. People leave better at their job.", tags:["How‑to focus","Labs","Playbooks"], unlock:["Lab agenda","Materials list","Assessment rubric","Recording plan"], cta:"Teach the thing—don’t pitch the thing.", kpis:["Completion rate","CSAT","Enablement adoption"]}},
+  Host:{{img:"assets/images/host.webp", vibe:"relaxed • hospitality‑first • premium touches", best:"incentive trips, customer retreats, partner offsites", blurb:"You deepen loyalty with unforgettable, well‑paced hospitality.", tags:["Hospitality","Moments of awe","Depth"], unlock:["Signature moment ideas","Pace map","F&B guardrails","Memory‑reel plan"], cta:"Design loyalty you can feel.", kpis:["Renewal/expansion","NPS","Repeat attendance"]}},
+  Rainmaker:{{img:"assets/images/rainmaker.webp", vibe:"confident • energetic • outcomes‑driven", best:"in‑booth programming + micro‑events around trade shows", blurb:"You turn foot traffic into meetings with repeatable programming and tight routing.", tags:["Repeatable draws","Demos","Lead routing"], unlock:["Hourly mini‑show loop","Scanner discipline","Lead routing","Clip cues"], cta:"Make the booth a campaign engine.", kpis:["Meetings booked","SQL rate","Sponsor upgrades"]}},
+  Guardian:{{img:"assets/images/guardian.webp", vibe:"inclusive • thoughtful • steady", best:"association tracks, sponsor showcases, community conferences", blurb:"You make space where more people can participate—and sponsors renew.", tags:["Accessibility","Sponsor value","Community"], unlock:["Sensory‑friendly options","Panel format rules","Sponsor grid cues"], cta:"Experiences that include everyone—and renew sponsors.", kpis:["NPS","ADA satisfaction","Sponsor renewals"]}},
+  Amplifier:{{img:"assets/images/amplifier.webp", vibe:"editorial • fast‑turn • distribution‑first", best:"content‑capture studios, interview pods, livestream add‑ons", blurb:"You turn moments into media. Every session fuels the pipeline.", tags:["Content engine","Interview pod","Fast edit"], unlock:["Capture map + shot list","Staffing grid","48‑hour clip plan","Release workflow"], cta:"Turn your event into a content engine.", kpis:["Clips in 48h","Reach/engagement","Cost per asset"]}}
+};
+function score(a){const s={{Showrunner:0,Connector:0,Scientist:0,Host:0,Rainmaker:0,Guardian:0,Amplifier:0}};
+  if(a.q1==="content") s.Amplifier+=2; if(a.q1==="meetings") s.Rainmaker+=2; if(a.q1==="brand") s.Showrunner+=2;
+  if(a.q1==="relationships") s.Connector+=2; if(a.q1==="enablement") s.Scientist+=2; if(a.q1==="sponsor") s.Guardian+=2;
+  const map={{booth:"Rainmaker",flagship:"Showrunner",roadshow:"Connector",workshop:"Scientist",community:"Guardian",retreat:"Host"}}; s[map[a.q2]]+=1;
+  if(a.q3==="exec"){{s.Connector+=1;s.Host+=1}} if(a.q3==="practitioner"){{s.Scientist+=1;s.Amplifier+=1}} if(a.q4==="48h") s.Amplifier+=2; else if(a.q4==="week") s.Amplifier+=1;
+  if(a.q5==="high") s.Guardian+=2; if(a.q6==="bigmoment"){{s.Showrunner+=2;s.Host+=1}} if(a.q6==="efficient"){{s.Scientist+=1;s.Rainmaker+=1}}
+  if(a.q7==="1000+") s.Showrunner+=2; if(a.q7==="100-400") s.Connector+=1; if(a.q7==="<=60"){{s.Host+=1;s.Scientist+=1}}
+  if(a.q8==="spectacle") s.Showrunner+=2; if(a.q8==="hands") s.Scientist+=2; if(a.q8==="chill") s.Host+=2; if(a.q8==="minishows") s.Rainmaker+=2; if(a.q8==="curated") s.Connector+=2; if(a.q8==="inclusive") s.Guardian+=2;
+  if(a.q9==="heavy"){{s.Rainmaker+=2;s.Showrunner+=1}} if(a.q9==="light"){{s.Host+=1;s.Guardian+=1}}
+  return s;
+}
+function choose(s,a){const arr=Object.entries(s).sort((x,y)=>y[1]-x[1]); if(a.q4==="48h" && s.Amplifier>=arr[0][1]-1) return "Amplifier"; return arr[0][0];}
+function render(key){const x=ARCH[key]; const tags=x.tags.map(t=>`<span class='pill'>${{t}}</span>`).join(""); const kpis=x.kpis.map(k=>`<div class='kpi'><h3>KPI</h3><div class='v'>${{k}}</div></div>`).join("");
+  document.getElementById("result").innerHTML=`
+  <div class="card result two">
+    <div>
+      <h1>${{key}}</h1>
+      <p class="lede">${{x.vibe}}</p>
+      <div>${{tags}}</div>
+      <p style="margin-top:8px">${{x.blurb}}</p>
+      <p class="small"><strong>Best for:</strong> ${{x.best}}</p>
+      <div class="kpis">${{kpis}}</div>
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <button class="btn primary" id="unlockBtn">Unlock full playbook</button>
+        <button class="btn orange" onclick="window.open('https://calendly.com/your-imprint-slot/15min','_blank')">Book 15‑min</button>
+      </div>
+    </div>
+    <div><img class="hero" src="${{x.img}}" alt="${{key}}"/></div>
+  </div>`;
+  document.getElementById("unlockBtn").onclick=()=>openGate(key);
+}
+function openGate(key){const x=ARCH[key]; const g=document.getElementById('gate'); g.style.display='flex'; document.getElementById('gateTitle').textContent=`${{key}} — unlock your plan`;
+  document.getElementById('reveal').onclick=()=>{const em=document.getElementById('gateEmail').value.trim();
+    if(!isWorkEmail(em)){document.getElementById('gateWarn').textContent="Use a work email (no personal domains).";return;}
+    const list=x.unlock.map(i=>`<li>${{i}}</li>`).join(''); const body=`<h4>What you'll get</h4><ul>${{list}}</ul><hr/><button class='btn orange' onclick="window.open('https://calendly.com/your-imprint-slot/15min','_blank')">Book 15‑min</button> <button class='btn' onclick='window.print()'>Save PDF</button>`;
+    const tgt=document.getElementById('revealBody'); tgt.innerHTML=body; tgt.style.display='block'; document.getElementById('gateWarn').textContent="";
+  };
+}
+document.getElementById("seePersona").onclick=()=>{const a={{
+  q1: q1.value, q2: q2.value, q3: q3.value, q4: q4.value, q5: q5.value, q6: q6.value, q7: q7.value, q8: q8.value, q9: q9.value
+}}; const s=score(a); const key=choose(s,a); render(key); window.scrollTo({{top:document.body.scrollHeight,behavior:'smooth'}});};
+</script>
+</body></html>
