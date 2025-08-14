@@ -199,7 +199,7 @@ function score(state){
   addScore(s, W.speed[state.speed]);
   addScore(s, W.access[state.access]);
   addScore(s, W.budget[state.budget]);
-  addScore(s, W.sales[state.sales]));
+  addScore(s, W.sales[state.sales]); /* <-- fixed line */
   state.eng.forEach(e=> addScore(s, W.eng[e]));
   addScore(s, W.attendance(state.att));
   return s;
