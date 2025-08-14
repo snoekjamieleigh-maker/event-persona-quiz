@@ -25,7 +25,12 @@ select,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2
 .btn{border:0;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700}
 .btn.primary{background:linear-gradient(180deg,var(--blue),#1B2AA0);color:#fff}
 .btn.ghost{background:#141821;border:1px solid #283043;color:#c8d0db}
-.hero{width:100%;border-radius:14px;border:1px solid var(--border);background:#0e121a;aspect-ratio:4/3;object-fit:cover}
+
+/* IMAGE */
+.hero{width:100%;border-radius:14px;border:1px solid var(--border);background:#0e121a;object-fit:cover}
+.hero-xl{aspect-ratio:16/9;max-height:560px}
+
+/* RESULT UI */
 .kbar{height:10px;background:#0e121a;border:1px solid #243045;border-radius:999px;overflow:hidden;margin-top:4px}
 .kbar .fill{height:100%;background:linear-gradient(90deg,#2C3CC9,#FA5C00)}
 .blend{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center}
@@ -146,7 +151,7 @@ select,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2
 </div>
 
 <script>
-console.log("persona-quiz build v11");
+console.log("persona-quiz build v12");
 
 // ---------- CONFIG ----------
 const IMG_VERSION = "v2"; // bump when you replace images
@@ -185,7 +190,7 @@ const W = {
   },
   setting: {flagship:{Showrunner:2}, booth:{Rainmaker:2}, roadshow:{Connector:2}, workshop:{Scientist:2}, community:{Guardian:2}, retreat:{Host:2}},
   aud: {exec:{Connector:1, Host:1}, practitioner:{Scientist:1, Amplifier:1}, mixed:{}},
-  speed: {'48h':{Amplifier:3}, week:{Amplifier:2}, later:{}}, // faster clips -> more Amplifier
+  speed: {'48h':{Amplifier:3}, week:{Amplifier:2}, later:{}},
   access: {high:{Guardian:2} , normal:{}},
   budget: {bigmoment:{Showrunner:2, Host:1}, efficient:{Scientist:1, Rainmaker:1}},
   sales: {heavy:{Rainmaker:2, Showrunner:1}, balanced:{}, light:{Host:1, Guardian:1}},
@@ -303,7 +308,7 @@ function rationale(state){
   return bits;
 }
 
-// ---------- RENDER ----------
+// ---------- RENDER (BIG IMAGE ON TOP) ----------
 function renderBlend(res, state){
   const container = document.getElementById('result'); if(!container) return;
   const intro = document.getElementById('resultIntro'); if (intro) intro.style.display = 'none';
@@ -316,7 +321,16 @@ function renderBlend(res, state){
 
   container.innerHTML = `
   <div class="card fade-in">
-    <div class="blend">
+    <!-- BIG TOP IMAGE -->
+    <img class="hero hero-xl" id="hero" src="${heroSrc}" alt="${res.a} image" onerror="this.src='https://placehold.co/1200x675?text=${res.a}'">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+      <button class="btn ghost" id="swap">Show ${res.b} image</button>
+      <button class="btn primary" id="unlock">Unlock plan</button>
+      <span class="small muted" style="align-self:center">Top match image: ${res.a}</span>
+    </div>
+
+    <!-- PERCENTAGES UNDER THE IMAGE -->
+    <div class="blend" style="margin-top:12px">
       <div>
         <h2>${res.a} <span class="small">(${res.pa}%)</span></h2>
         <div class="kbar"><div class="fill" style="width:${res.pa}%"></div></div>
@@ -334,11 +348,8 @@ function renderBlend(res, state){
       <span class="small" style="opacity:.85">— ${c.label}. ${c.expl}</span>
     </p>
 
+    <!-- DETAILS -->
     <div class="grid two" style="margin-top:10px">
-      <div>
-        <img class="hero" id="hero" src="${heroSrc}" alt="${res.a} image" onerror="this.src='https://placehold.co/800x600?text=${res.a}'">
-        <p class="small muted" style="margin-top:6px">Top match image: ${res.a}</p>
-      </div>
       <div>
         <h3>Best-fit formats</h3>
         <p class="small"><strong>${res.a}:</strong> ${ARCH[res.a].best}</p>
@@ -346,14 +357,10 @@ function renderBlend(res, state){
 
         <h3 style="margin-top:10px">Success KPIs (both personas)</h3>
         <div class="kpis">${kpisA}${kpisB}</div>
-
-        <h3 style="margin-top:10px">Why this match</h3>
+      </div>
+      <div>
+        <h3>Why this match</h3>
         <ul class="small">${rlist}</ul>
-
-        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn primary" id="unlock">Unlock plan</button>
-          <button class="btn ghost" id="swap">Show ${res.b} image</button>
-        </div>
       </div>
     </div>
   </div>`;
@@ -397,7 +404,7 @@ function setupUI(){
       onChange();
     });
   };
-  wirePills("goals",2); wirePills("eng",2);
+  wirePills("goals",2); wirePills("eng",2");
 
   const att = document.getElementById('att'), attv = document.getElementById('attv');
   if(att && attv){ att.addEventListener('input', ()=>{ attv.textContent = "≈ " + att.value; onChange(); }); }
