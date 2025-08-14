@@ -1,10 +1,157 @@
-<script>
-console.log("persona-quiz build v10");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Event Persona Finder — Imprint</title>
+<meta name="description" content="Describe your event and get a blended persona with KPIs, confidence, and a shareable link.">
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--ink:#e8ecf1;--muted:#aab2be;--border:#222533;--blue:#2C3CC9;--orange:#FA5C00;--pill:#121728}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,Segoe UI,Inter,Arial}
+.container{max-width:1100px;margin:28px auto;padding:0 16px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:18px}
+h1{font-size:34px;margin:0 0 8px}.lede{color:var(--muted)}
+.grid{display:grid;gap:14px}.two{grid-template-columns:1.1fr .9fr}@media(max-width:959px){.two{grid-template-columns:1fr}}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.label{display:block;margin:8px 0 6px;color:#9aa3af;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--pill);border:1px solid #242b3a;color:#c4cad6;font-size:14px;cursor:pointer;user-select:none;transition:.15s}
+.pill[data-active="1"]{background:#182036;border-color:#2c3852;color:#fff;box-shadow:0 0 0 2px #1a2233 inset}
+.pgroup{display:flex;flex-wrap:wrap;gap:8px}
+.seg{display:flex;border:1px solid #263044;border-radius:12px;overflow:hidden}
+.seg button{flex:1;padding:10px;border:0;background:#0e121a;color:#c4cad6;cursor:pointer}
+.seg button[aria-pressed="true"]{background:#192037;color:#fff}
+.range{display:flex;align-items:center;gap:10px}.range input[type=range]{flex:1}
+select,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2a2f3a;background:#0c0f15;color:var(--ink)}
+.btn{border:0;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700}
+.btn.primary{background:linear-gradient(180deg,var(--blue),#1B2AA0);color:#fff}
+.btn.ghost{background:#141821;border:1px solid #283043;color:#c8d0db}
+.hero{width:100%;border-radius:14px;border:1px solid var(--border);background:#0e121a;aspect-ratio:4/3;object-fit:cover}
+.kbar{height:10px;background:#0e121a;border:1px solid #243045;border-radius:999px;overflow:hidden;margin-top:4px}
+.kbar .fill{height:100%;background:linear-gradient(90deg,#2C3CC9,#FA5C00)}
+.blend{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}.kpi{background:#11141a;border:1px solid var(--border);border-radius:14px;padding:12px}
+.kpi h3{margin:0;color:#aab2be;font-size:12px;letter-spacing:.06em}.kpi .v{font-weight:800;font-size:20px;margin-top:4px}
+.small{font-size:12px;color:#aab2be}.muted{color:#aab2be}
+.fade-in{animation:fade .25s ease-out both}@keyframes fade{from{opacity:.001;transform:translateY(6px)}to{opacity:1;transform:none}}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h1>Find your event’s persona</h1>
+    <p class="lede">Real-time preview and shareable links. Choose what matters—goals, setting, engagement—and we’ll blend two personas with a confidence score.</p>
+    <div class="toolbar" style="margin-top:8px">
+      <button class="btn ghost" id="copy">Copy share link</button>
+      <button class="btn ghost" id="reset">Reset</button>
+    </div>
+    <p class="small muted" id="hint" style="margin-top:6px">Tweak anything below—the result updates instantly.</p>
+  </div>
 
-// ====== CONFIG ======
+  <div class="grid two" style="margin-top:14px">
+    <div class="card">
+      <div class="label">Primary goals (pick up to 2)</div>
+      <div class="pgroup" id="goals">
+        <span class="pill" data-key="brand">Brand moment</span>
+        <span class="pill" data-key="meetings">Qualified meetings</span>
+        <span class="pill" data-key="relationships">Exec relationships</span>
+        <span class="pill" data-key="enablement">Enablement</span>
+        <span class="pill" data-key="sponsor">Sponsor value</span>
+        <span class="pill" data-key="content">Content for 90 days</span>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <div>
+          <div class="label">Setting</div>
+          <div class="seg" id="setting">
+            <button data-v="flagship" aria-pressed="true">Flagship</button>
+            <button data-v="booth">Booth</button>
+            <button data-v="roadshow">Roadshow</button>
+            <button data-v="workshop">Workshop</button>
+            <button data-v="community">Association</button>
+            <button data-v="retreat">Retreat</button>
+          </div>
+        </div>
+        <div>
+          <div class="label">Audience</div>
+          <div class="seg" id="aud">
+            <button data-v="mixed" aria-pressed="true">Mixed</button>
+            <button data-v="exec">Exec heavy</button>
+            <button data-v="practitioner">Practitioner</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <div>
+          <div class="label">Speed to clips</div>
+          <div class="seg" id="speed">
+            <button data-v="48h" aria-pressed="true">48h</button>
+            <button data-v="week">Within a week</button>
+            <button data-v="later">Later</button>
+          </div>
+        </div>
+        <div>
+          <div class="label">Accessibility / sponsors</div>
+          <div class="seg" id="access">
+            <button data-v="normal" aria-pressed="true">Important</button>
+            <button data-v="high">Critical</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <div>
+          <div class="label">Budget posture</div>
+          <div class="seg" id="budget">
+            <button data-v="bigmoment" aria-pressed="true">Big moment</button>
+            <button data-v="efficient">Efficient</button>
+          </div>
+        </div>
+        <div>
+          <div class="label">Attendance (estimate)</div>
+          <div class="range">
+            <input id="att" type="range" min="30" max="2000" step="10" value="300">
+            <span id="attv" class="small">≈ 300</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="label" style="margin-top:10px">Engagement style (pick up to 2)</div>
+      <div class="pgroup" id="eng">
+        <span class="pill" data-key="spectacle">Big stage</span>
+        <span class="pill" data-key="minishows">Mini-shows loop</span>
+        <span class="pill" data-key="curated">Curated rooms</span>
+        <span class="pill" data-key="hands">Hands-on labs</span>
+        <span class="pill" data-key="chill">Chill hospitality</span>
+        <span class="pill" data-key="inclusive">Inclusive + sponsors</span>
+      </div>
+
+      <div class="label" style="margin-top:10px">Sales involvement</div>
+      <div class="seg" id="sales">
+        <button data-v="heavy" aria-pressed="true">Heavy</button>
+        <button data-v="balanced">Balanced</button>
+        <button data-v="light">Light</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Live result</h3>
+      <div id="resultIntro" class="small muted">Start picking options — we’ll blend your top two personas automatically.</div>
+      <div id="result"></div>
+    </div>
+  </div>
+
+  <div style="margin:24px 0" class="small">© Imprint Events Group — Tools & Insights</div>
+</div>
+
+<script>
+console.log("persona-quiz build v11");
+
+// ---------- CONFIG ----------
 const IMG_VERSION = "v2"; // bump when you replace images
 
-// ====== IMAGES ======
+// ---------- IMAGES ----------
 const IMG = {
   Showrunner: `./assets/images/showrunner.webp?${IMG_VERSION}`,
   Connector:  `./assets/images/connector.webp?${IMG_VERSION}`,
@@ -15,7 +162,7 @@ const IMG = {
   Amplifier:  `./assets/images/amplifier.webp?${IMG_VERSION}`,
 };
 
-// ====== COPY ======
+// ---------- COPY ----------
 const ARCH = {
   Showrunner: {vibe:"bold • high-energy • theatrical", best:"flagship conferences, product launches, big-stage trade shows", kpis:["Peak-session attendance","Qualified meetings","Clip reach"], unlock:["Programming shape","“Headline” moment","Clip plan","Budget watchouts"], cta:"Make your moment land—and last."},
   Connector:  {vibe:"warm • curated • relationship-driven", best:"exec breakfasts, micro-summits, VIP dinners, roadshows", kpis:["Qualified intros","Opps created","Follow-up meetings"], unlock:["Roundtable prompts","Curated-intro workflow","Timebox rules"], cta:"Make the room your moat."},
@@ -26,7 +173,7 @@ const ARCH = {
   Amplifier:  {vibe:"editorial • fast-turn • distribution-first", best:"content-capture studios, interview pods, livestream add-ons", kpis:["Clips in 48h","Reach/engagement","Cost per asset"], unlock:["Capture map + shot list","Staffing grid","48-hour clip plan","Release workflow"], cta:"Turn your event into a content engine."},
 };
 
-// ====== WEIGHTS (Amplifier tilt) ======
+// ---------- WEIGHTS (Amplifier tilt) ----------
 const W = {
   goals: {
     brand: {Showrunner:3, Amplifier:1, Host:1},
@@ -34,11 +181,11 @@ const W = {
     relationships: {Connector:3, Host:1},
     enablement: {Scientist:3, Amplifier:1},
     sponsor: {Guardian:3, Rainmaker:1},
-    content: {Amplifier:4, Showrunner:1, Scientist:1},
+    content: {Amplifier:4, Showrunner:1, Scientist:1}, // +1 tilt
   },
   setting: {flagship:{Showrunner:2}, booth:{Rainmaker:2}, roadshow:{Connector:2}, workshop:{Scientist:2}, community:{Guardian:2}, retreat:{Host:2}},
   aud: {exec:{Connector:1, Host:1}, practitioner:{Scientist:1, Amplifier:1}, mixed:{}},
-  speed: {'48h':{Amplifier:3}, week:{Amplifier:2}, later:{}},
+  speed: {'48h':{Amplifier:3}, week:{Amplifier:2}, later:{}}, // faster clips -> more Amplifier
   access: {high:{Guardian:2} , normal:{}},
   budget: {bigmoment:{Showrunner:2, Host:1}, efficient:{Scientist:1, Rainmaker:1}},
   sales: {heavy:{Rainmaker:2, Showrunner:1}, balanced:{}, light:{Host:1, Guardian:1}},
@@ -49,7 +196,7 @@ const W = {
   attendance(n){ if(n>=1000) return {Showrunner:2}; if(n>=100) return {Connector:1}; return {Host:1, Scientist:1}; }
 };
 
-// ====== TIE-BREAK + TILT ======
+// ---------- TIE-BREAK + TILT ----------
 const EPS = { Amplifier:0.06, Showrunner:0.05, Connector:0.04, Rainmaker:0.03, Scientist:0.02, Host:0.01, Guardian:0.005 };
 function applyMarketingTilt(state, s){
   let amp = 0.5;
@@ -60,7 +207,7 @@ function applyMarketingTilt(state, s){
   return s;
 }
 
-// ====== HELPERS ======
+// ---------- HELPERS ----------
 function addScore(s, m){ Object.entries(m||{}).forEach(([k,v])=> s[k]+=v); }
 function pickVal(id){
   const b = document.querySelector('#'+id+' button[aria-pressed="true"]');
@@ -114,7 +261,7 @@ function applyState(params){
   if(!isNaN(a)){ const r=document.getElementById('att'), v=document.getElementById('attv'); if(r&&v){ r.value=a; v.textContent="≈ "+a; } }
 }
 
-// ====== SCORING ======
+// ---------- SCORING ----------
 function score(state){
   const s={Showrunner:0,Connector:0,Scientist:0,Host:0,Rainmaker:0,Guardian:0,Amplifier:0};
   state.goals.forEach(g=> addScore(s, W.goals[g]));
@@ -156,7 +303,7 @@ function rationale(state){
   return bits;
 }
 
-// ====== RENDER ======
+// ---------- RENDER ----------
 function renderBlend(res, state){
   const container = document.getElementById('result'); if(!container) return;
   const intro = document.getElementById('resultIntro'); if (intro) intro.style.display = 'none';
@@ -189,7 +336,7 @@ function renderBlend(res, state){
 
     <div class="grid two" style="margin-top:10px">
       <div>
-        <img class="hero" id="hero" src="${heroSrc}" alt="${res.a} image">
+        <img class="hero" id="hero" src="${heroSrc}" alt="${res.a} image" onerror="this.src='https://placehold.co/800x600?text=${res.a}'">
         <p class="small muted" style="margin-top:6px">Top match image: ${res.a}</p>
       </div>
       <div>
@@ -224,12 +371,10 @@ function renderBlend(res, state){
   if (unlock) unlock.onclick = () => gate(res.a);
 }
 
-// ====== UI WIRING (runs after DOM ready) ======
-function safeSetup(){
-  const segIds = ["setting","aud","speed","access","budget","sales"];
-  segIds.forEach(id=>{
-    const el = document.getElementById(id);
-    if(!el) return;
+// ---------- UI WIRING ----------
+function setupUI(){
+  ["setting","aud","speed","access","budget","sales"].forEach(id=>{
+    const el = document.getElementById(id); if(!el) return;
     el.addEventListener('click', (e)=>{
       if(e.target.tagName !== 'BUTTON') return;
       [...el.children].forEach(b=>b.setAttribute('aria-pressed','false'));
@@ -238,7 +383,7 @@ function safeSetup(){
     });
   });
 
-  const pillSetup = (id, max=2)=>{
+  const wirePills = (id, max=2)=>{
     const el = document.getElementById(id); if(!el) return;
     el.addEventListener('click', (e)=>{
       const pill = e.target.closest('.pill'); if(!pill) return;
@@ -252,32 +397,19 @@ function safeSetup(){
       onChange();
     });
   };
-  pillSetup("goals",2);
-  pillSetup("eng",2);
+  wirePills("goals",2); wirePills("eng",2);
 
   const att = document.getElementById('att'), attv = document.getElementById('attv');
-  if(att && attv){
-    att.addEventListener('input', ()=>{ attv.textContent = "≈ " + att.value; onChange(); });
-  }
+  if(att && attv){ att.addEventListener('input', ()=>{ attv.textContent = "≈ " + att.value; onChange(); }); }
 
   const reset = document.getElementById('reset');
-  if(reset){
-    reset.onclick = ()=>{
-      const clean = location.origin + location.pathname; // strip query safely
-      location.replace(clean);
-    };
-  }
+  if(reset){ reset.onclick = ()=>{ location.replace(location.origin + location.pathname); }; }
+
   const copy = document.getElementById('copy');
-  if(copy){
-    copy.onclick = ()=>{
-      navigator.clipboard.writeText(location.href).then(()=>{
-        const hint = document.getElementById('hint'); if(hint) hint.textContent="Link copied — share it with your team.";
-      });
-    };
-  }
+  if(copy){ copy.onclick = ()=>{ navigator.clipboard.writeText(location.href).then(()=>{ const h=document.getElementById('hint'); if(h) h.textContent="Link copied — share it with your team."; }); }; }
 }
 
-// ====== GATE ======
+// ---------- GATE ----------
 function gate(key){
   const email = prompt("Work email to unlock the plan:");
   if(!email) return;
@@ -287,7 +419,7 @@ function gate(key){
   alert("Unlocked: " + key + " — we'll bring this into a 15-min blueprint call.");
 }
 
-// ====== LOOP ======
+// ---------- LOOP ----------
 let firstRun = true;
 function onChange(){
   try{
@@ -298,23 +430,22 @@ function onChange(){
     const res = topTwo(sc);
     renderBlend(res, state);
     if(firstRun){
-      const resEl = document.querySelector('#result');
-      if(resEl){
+      const resEl = document.querySelector('#result'); if(resEl){
         const y = resEl.getBoundingClientRect().top + window.scrollY - 10;
         window.scrollTo({top:y,behavior:'smooth'});
       }
     }
     firstRun = false;
-  }catch(err){
-    console.error("render error:", err);
-  }
+  }catch(err){ console.error("render error:", err); }
 }
 
-// ====== INIT ======
+// ---------- INIT ----------
 document.addEventListener('DOMContentLoaded', ()=>{
-  safeSetup();
+  setupUI();
   const params = new URLSearchParams(location.search);
   applyState(params);
   onChange();
 });
 </script>
+</body>
+</html>
