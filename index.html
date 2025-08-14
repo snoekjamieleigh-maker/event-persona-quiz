@@ -26,9 +26,18 @@ select,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2
 .btn.primary{background:linear-gradient(180deg,var(--blue),#1B2AA0);color:#fff}
 .btn.ghost{background:#141821;border:1px solid #283043;color:#c8d0db}
 
-/* IMAGE */
-.hero{width:100%;border-radius:14px;border:1px solid var(--border);background:#0e121a;object-fit:cover}
-.hero-xl{aspect-ratio:16/9;max-height:560px}
+/* IMAGE — natural aspect ratio (no stretch) */
+.hero{
+  width:100%;
+  height:auto;            /* keep original ratio */
+  display:block;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:#0e121a;
+}
+.hero-xl{
+  max-height:65vh;        /* big but capped; remove if you want unlimited height */
+}
 
 /* RESULT UI */
 .kbar{height:10px;background:#0e121a;border:1px solid #243045;border-radius:999px;overflow:hidden;margin-top:4px}
@@ -151,10 +160,10 @@ select,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2
 </div>
 
 <script>
-console.log("persona-quiz build v12");
+console.log("persona-quiz build v14");
 
 // ---------- CONFIG ----------
-const IMG_VERSION = "v2"; // bump when you replace images
+const IMG_VERSION = "v2";
 
 // ---------- IMAGES ----------
 const IMG = {
@@ -186,7 +195,7 @@ const W = {
     relationships: {Connector:3, Host:1},
     enablement: {Scientist:3, Amplifier:1},
     sponsor: {Guardian:3, Rainmaker:1},
-    content: {Amplifier:4, Showrunner:1, Scientist:1}, // +1 tilt
+    content: {Amplifier:4, Showrunner:1, Scientist:1},
   },
   setting: {flagship:{Showrunner:2}, booth:{Rainmaker:2}, roadshow:{Connector:2}, workshop:{Scientist:2}, community:{Guardian:2}, retreat:{Host:2}},
   aud: {exec:{Connector:1, Host:1}, practitioner:{Scientist:1, Amplifier:1}, mixed:{}},
@@ -308,21 +317,20 @@ function rationale(state){
   return bits;
 }
 
-// ---------- RENDER (BIG IMAGE ON TOP) ----------
+// ---------- RENDER (BIG IMAGE ON TOP; NATURAL RATIO) ----------
 function renderBlend(res, state){
   const container = document.getElementById('result'); if(!container) return;
   const intro = document.getElementById('resultIntro'); if (intro) intro.style.display = 'none';
 
   const c = confidenceLabel(res.conf);
-  const heroSrc = IMG[res.a] || "";
   const rlist = rationale(state).map(x=>`<li>${x}</li>`).join("");
   const kpisA = ARCH[res.a].kpis.slice(0,3).map(k=>`<div class='kpi'><h3>${res.a} KPI</h3><div class='v'>${k}</div></div>`).join("");
   const kpisB = ARCH[res.b].kpis.slice(0,3).map(k=>`<div class='kpi'><h3>${res.b} KPI</h3><div class='v'>${k}</div></div>`).join("");
 
   container.innerHTML = `
   <div class="card fade-in">
-    <!-- BIG TOP IMAGE -->
-    <img class="hero hero-xl" id="hero" src="${heroSrc}" alt="${res.a} image" onerror="this.src='https://placehold.co/1200x675?text=${res.a}'">
+    <!-- BIG TOP IMAGE (natural ratio) -->
+    <img class="hero hero-xl" id="hero" src="${IMG[res.a]}" alt="${res.a} image" onerror="this.src='https://placehold.co/1200x675?text=${res.a}'" />
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
       <button class="btn ghost" id="swap">Show ${res.b} image</button>
       <button class="btn primary" id="unlock">Unlock plan</button>
@@ -365,13 +373,19 @@ function renderBlend(res, state){
     </div>
   </div>`;
 
-  const swap = document.getElementById('swap');
+  // Reliable swap (track current with dataset instead of checking URLs)
   const hero = document.getElementById('hero');
-  if (swap && hero){
+  const swap = document.getElementById('swap');
+  if (hero && swap){
+    hero.dataset.a = IMG[res.a];
+    hero.dataset.b = IMG[res.b];
+    hero.dataset.current = "a";
     swap.onclick = () => {
-      const a = IMG[res.a], b = IMG[res.b];
-      hero.src = (hero.src.includes(a) ? b : a) || hero.src;
-      swap.textContent = hero.src.includes(a) ? `Show ${res.b} image` : `Show ${res.a} image`;
+      const isA = hero.dataset.current === "a";
+      hero.src = isA ? hero.dataset.b : hero.dataset.a;
+      hero.dataset.current = isA ? "b" : "a";
+      swap.textContent = isA ? `Show ${res.a} image` : `Show ${res.b} image`;
+      hero.alt = isA ? `${res.b} image` : `${res.a} image`;
     };
   }
   const unlock = document.getElementById('unlock');
@@ -404,7 +418,8 @@ function setupUI(){
       onChange();
     });
   };
-  wirePills("goals",2); wirePills("eng",2);
+  wirePills("goals",2);
+  wirePills("eng",2);
 
   const att = document.getElementById('att'), attv = document.getElementById('attv');
   if(att && attv){ att.addEventListener('input', ()=>{ attv.textContent = "≈ " + att.value; onChange(); }); }
