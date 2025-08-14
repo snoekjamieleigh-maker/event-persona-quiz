@@ -404,7 +404,7 @@ function setupUI(){
       onChange();
     });
   };
-  wirePills("goals",2); wirePills("eng",2");
+  wirePills("goals",2); wirePills("eng",2);
 
   const att = document.getElementById('att'), attv = document.getElementById('attv');
   if(att && attv){ att.addEventListener('input', ()=>{ attv.textContent = "≈ " + att.value; onChange(); }); }
